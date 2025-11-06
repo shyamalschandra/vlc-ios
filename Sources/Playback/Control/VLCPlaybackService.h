@@ -179,6 +179,9 @@ NS_SWIFT_NAME(PlaybackService)
 - (void)addSubtitlesToCurrentPlaybackFromURL:(NSURL *)subtitleURL;
 
 - (void)setAmplification:(CGFloat)amplification forBand:(unsigned int)index;
+- (CGFloat)amplificationOfBand:(unsigned int)index;
+- (unsigned int)numberOfBands;
+- (CGFloat)frequencyOfBandAtIndex:(unsigned int)index;
 - (void)togglePictureInPicture;
 
 #if !TARGET_OS_TV

@@ -15,6 +15,7 @@
 #import "VLCRemoteControlService.h"
 #import "VLCFavoriteService.h"
 #import "VLCStripeController.h"
+#import "VLCiCloudSyncManager.h"
 #import "VLC-Swift.h"
 
 @interface VLCAppCoordinator()
@@ -57,6 +58,23 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [VLCLibrary setSharedEventsConfiguration:[VLCEventsLegacyConfiguration new]];
             [self initializeServices];
+            
+            // Initialize Focus mode manager if available
+            if (@available(iOS 15.0, *)) {
+                Class focusModeClass = NSClassFromString(@"VLCFocusModeManager");
+                if (focusModeClass) {
+                    id shared = [focusModeClass performSelector:@selector(shared)];
+                    if (shared && self.mediaLibraryService) {
+                        SEL selector = NSSelectorFromString(@"setMediaLibraryService:");
+                        if ([shared respondsToSelector:selector]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                            [shared performSelector:selector withObject:self.mediaLibraryService];
+#pragma clang diagnostic pop
+                        }
+                    }
+                }
+            }
         });
     }
     return self;
@@ -71,6 +89,11 @@
 
     // start the remote control service
     _remoteControlService = [[VLCRemoteControlService alloc] init];
+    
+    // Initialize iCloud sync if enabled
+    if ([[VLCiCloudSyncManager sharedManager] isiCloudSyncEnabled]) {
+        [[VLCiCloudSyncManager sharedManager] syncFavorites:self.favoriteService];
+    }
 }
 
 - (MediaLibraryService *)mediaLibraryService

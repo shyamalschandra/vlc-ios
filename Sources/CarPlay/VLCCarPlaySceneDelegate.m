@@ -19,6 +19,7 @@
 #import "CPListTemplate+NetworkStreams.h"
 #import "VLCCarPlayPlaylistsController.h"
 #import "VLCNowPlayingTemplateObserver.h"
+#import "VLCCarPlayAudioManager.h"
 
 #import "VLC-Swift.h"
 
@@ -59,6 +60,9 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(displayPlayQueueTemplate) name:VLCDisplayPlayQueueCarPlay object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetPlayQueueTemplate) name:VLCPlaybackServicePlaybackDidStop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetPlayQueueTemplate) name:VLCPlaybackServiceShuffleModeUpdated object:nil];
+    
+    // Apply CarPlay audio settings when connected
+    [[VLCCarPlayAudioManager sharedManager] applyAudioSettingsToPlaybackService];
 }
 
 - (void)templateApplicationScene:(CPTemplateApplicationScene *)templateApplicationScene

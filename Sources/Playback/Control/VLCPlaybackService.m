@@ -515,6 +515,25 @@ NSString *const VLCLastPlaylistPlayedMedia = @"LastPlaylistPlayedMedia";
 
     [_playbackSessionManagementLock unlock];
     [[NSNotificationCenter defaultCenter] postNotificationName:VLCPlaybackServicePlaybackDidStop object:self];
+    
+#if TARGET_OS_IOS
+        // End Live Activity if available
+        if (@available(iOS 16.1, *)) {
+            Class liveActivityClass = NSClassFromString(@"VLCLiveActivityManager");
+            if (liveActivityClass) {
+                id shared = [liveActivityClass performSelector:@selector(shared)];
+                if (shared) {
+                    SEL selector = NSSelectorFromString(@"endPlaybackActivity");
+                    if ([shared respondsToSelector:selector]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                        [shared performSelector:selector];
+#pragma clang diagnostic pop
+                    }
+                }
+            }
+        }
+#endif
     if (_sessionWillRestart) {
         dispatch_async(dispatch_get_main_queue(), ^{
             self->_sessionWillRestart = NO;
@@ -601,6 +620,35 @@ NSString *const VLCLastPlaylistPlayedMedia = @"LastPlaylistPlayedMedia";
 
         [[NSNotificationCenter defaultCenter] postNotificationName:VLCPlaybackServicePlaybackPositionUpdated
                                                             object:self];
+        
+#if TARGET_OS_IOS
+        // Update Live Activity progress
+        if (@available(iOS 16.1, *)) {
+            Class liveActivityClass = NSClassFromString(@"VLCLiveActivityManager");
+            if (liveActivityClass) {
+                id shared = [liveActivityClass performSelector:@selector(shared)];
+                if (shared) {
+                    VLCPlaybackService *vps = (VLCPlaybackService *)self;
+                    CGFloat progress = vps.playbackPosition;
+                    CGFloat elapsed = vps.playbackTime.floatValue / 1000.0;
+                    CGFloat remaining = (vps.mediaDuration - elapsed);
+                    SEL selector = NSSelectorFromString(@"updatePlaybackActivityWithProgress:isPlaying:elapsedTime:remainingTime:");
+                    NSMethodSignature *signature = [shared methodSignatureForSelector:selector];
+                    if (signature) {
+                        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+                        [invocation setTarget:shared];
+                        [invocation setSelector:selector];
+                        [invocation setArgument:&progress atIndex:2];
+                        BOOL isPlaying = vps.isPlaying;
+                        [invocation setArgument:&isPlaying atIndex:3];
+                        [invocation setArgument:&elapsed atIndex:4];
+                        [invocation setArgument:&remaining atIndex:5];
+                        [invocation invoke];
+                    }
+                }
+            }
+        }
+#endif
     });
 }
 
@@ -1729,10 +1777,102 @@ NSString *const VLCLastPlaylistPlayedMedia = @"LastPlaylistPlayedMedia";
 
             UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"BUTTON_CANCEL", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
                 [[NSNotificationCenter defaultCenter] postNotificationName:VLCPlaybackServicePlaybackDidStart object:self];
+                
+#if TARGET_OS_IOS
+                // Update widget data
+                if (@available(iOS 14.0, *)) {
+                    Class widgetProviderClass = NSClassFromString(@"VLCWidgetDataProvider");
+                    if (widgetProviderClass) {
+                        id shared = [widgetProviderClass performSelector:@selector(shared)];
+                        if (shared) {
+                            SEL selector = NSSelectorFromString(@"updateFromPlaybackService:");
+                            if ([shared respondsToSelector:selector]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                                [shared performSelector:selector withObject:self];
+#pragma clang diagnostic pop
+                            }
+                        }
+                    }
+                }
+                
+                // Start Live Activity if available
+                if (@available(iOS 16.1, *)) {
+                    Class liveActivityClass = NSClassFromString(@"VLCLiveActivityManager");
+                    if (liveActivityClass) {
+                        id shared = [liveActivityClass performSelector:@selector(shared)];
+                        if (shared) {
+                            VLCMetaData *metadata = self.metadata;
+                            NSString *title = metadata.title ?: @"";
+                            NSString *artist = metadata.artist;
+                            NSTimeInterval duration = (NSTimeInterval)self.mediaDuration;
+                            SEL selector = NSSelectorFromString(@"startPlaybackActivityWithTitle:artist:thumbnail:duration:");
+                            NSMethodSignature *signature = [shared methodSignatureForSelector:selector];
+                            if (signature) {
+                                NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+                                [invocation setTarget:shared];
+                                [invocation setSelector:selector];
+                                [invocation setArgument:&title atIndex:2];
+                                [invocation setArgument:&artist atIndex:3];
+                                id thumbnail = nil;
+                                [invocation setArgument:&thumbnail atIndex:4];
+                                [invocation setArgument:&duration atIndex:5];
+                                [invocation invoke];
+                            }
+                        }
+                    }
+                }
+#endif
             }];
             UIAlertAction *continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"BUTTON_CONTINUE", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                 [self setPlaybackPosition:lastPosition];
                 [[NSNotificationCenter defaultCenter] postNotificationName:VLCPlaybackServicePlaybackDidStart object:self];
+                
+#if TARGET_OS_IOS
+                // Update widget data
+                if (@available(iOS 14.0, *)) {
+                    Class widgetProviderClass = NSClassFromString(@"VLCWidgetDataProvider");
+                    if (widgetProviderClass) {
+                        id shared = [widgetProviderClass performSelector:@selector(shared)];
+                        if (shared) {
+                            SEL selector = NSSelectorFromString(@"updateFromPlaybackService:");
+                            if ([shared respondsToSelector:selector]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                                [shared performSelector:selector withObject:self];
+#pragma clang diagnostic pop
+                            }
+                        }
+                    }
+                }
+                
+                // Start Live Activity if available
+                if (@available(iOS 16.1, *)) {
+                    Class liveActivityClass = NSClassFromString(@"VLCLiveActivityManager");
+                    if (liveActivityClass) {
+                        id shared = [liveActivityClass performSelector:@selector(shared)];
+                        if (shared) {
+                            VLCMetaData *metadata = self.metadata;
+                            NSString *title = metadata.title ?: @"";
+                            NSString *artist = metadata.artist;
+                            NSTimeInterval duration = (NSTimeInterval)self.mediaDuration;
+                            SEL selector = NSSelectorFromString(@"startPlaybackActivityWithTitle:artist:thumbnail:duration:");
+                            NSMethodSignature *signature = [shared methodSignatureForSelector:selector];
+                            if (signature) {
+                                NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+                                [invocation setTarget:shared];
+                                [invocation setSelector:selector];
+                                [invocation setArgument:&title atIndex:2];
+                                [invocation setArgument:&artist atIndex:3];
+                                id thumbnail = nil;
+                                [invocation setArgument:&thumbnail atIndex:4];
+                                [invocation setArgument:&duration atIndex:5];
+                                [invocation invoke];
+                            }
+                        }
+                    }
+                }
+#endif
             }];
 
             [alertController addAction:cancelAction];
@@ -1749,6 +1889,52 @@ NSString *const VLCLastPlaylistPlayedMedia = @"LastPlaylistPlayedMedia";
                     [self setPlaybackPosition:lastPosition];
                 }
                 [[NSNotificationCenter defaultCenter] postNotificationName:VLCPlaybackServicePlaybackDidStart object:self];
+                
+#if TARGET_OS_IOS
+                // Update widget data
+                if (@available(iOS 14.0, *)) {
+                    Class widgetProviderClass = NSClassFromString(@"VLCWidgetDataProvider");
+                    if (widgetProviderClass) {
+                        id shared = [widgetProviderClass performSelector:@selector(shared)];
+                        if (shared) {
+                            SEL selector = NSSelectorFromString(@"updateFromPlaybackService:");
+                            if ([shared respondsToSelector:selector]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                                [shared performSelector:selector withObject:self];
+#pragma clang diagnostic pop
+                            }
+                        }
+                    }
+                }
+                
+                // Start Live Activity if available
+                if (@available(iOS 16.1, *)) {
+                    Class liveActivityClass = NSClassFromString(@"VLCLiveActivityManager");
+                    if (liveActivityClass) {
+                        id shared = [liveActivityClass performSelector:@selector(shared)];
+                        if (shared) {
+                            VLCMetaData *metadata = self.metadata;
+                            NSString *title = metadata.title ?: @"";
+                            NSString *artist = metadata.artist;
+                            NSTimeInterval duration = (NSTimeInterval)self.mediaDuration;
+                            SEL selector = NSSelectorFromString(@"startPlaybackActivityWithTitle:artist:thumbnail:duration:");
+                            NSMethodSignature *signature = [shared methodSignatureForSelector:selector];
+                            if (signature) {
+                                NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+                                [invocation setTarget:shared];
+                                [invocation setSelector:selector];
+                                [invocation setArgument:&title atIndex:2];
+                                [invocation setArgument:&artist atIndex:3];
+                                id thumbnail = nil;
+                                [invocation setArgument:&thumbnail atIndex:4];
+                                [invocation setArgument:&duration atIndex:5];
+                                [invocation invoke];
+                            }
+                        }
+                    }
+                }
+#endif
             }];
             #endif
         }

@@ -774,7 +774,7 @@ typedef void (^CompletionHandler)(PKPaymentAuthorizationStatus);
 
     PKPaymentRequest *paymentRequest = [[PKPaymentRequest alloc] init];
     paymentRequest.countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-    paymentRequest.merchantIdentifier = @"merchant.org.videolan.vlc";
+    paymentRequest.merchantIdentifier = @"merchant.sapanamicro";
     paymentRequest.merchantCapabilities = PKMerchantCapability3DS;
     paymentRequest.paymentSummaryItems = @[summaryItem];
     paymentRequest.currencyCode = _selectedCurrency.isoCode;

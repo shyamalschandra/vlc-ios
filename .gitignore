@@ -1,30 +1,149 @@
 # Xcode
-*.mode*
+#
+# Build generated
+build/
+DerivedData/
 *.pbxuser
-xcuserdata
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
 *.xccheckout
+
+# User-specific files
+xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+# Xcode Patch - ignore everything except project files
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+!*.xcworkspace/xcshareddata/
+
+# Obj-C/Swift specific
+*.hmap
+
+# App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.app.dSYM.zip
+*.app.dSYM
+*.xcarchive
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# CocoaPods
+#
+# We recommend against adding the Pods directory to your .gitignore. However
+# you should judge for yourself, the pros and cons are mentioned at:
+# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
+#
+Pods/
+
+# Carthage
+#
+# Add this line if you want to avoid checking in source code from Carthage dependencies.
+# Carthage/Checkouts
+Carthage/Build/
+
+# Accio dependency management
+Dependencies/
+.accio/
+
+# Swift Package Manager
+#
+# Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
+# Packages/
+# Package.pins
+# Package.resolved
+#
+# Xcode automatically generates this directory with a .xcworkspacedata file and xcuserdata
+# hence it is not needed unless you have added a package configuration file to your project
+.swiftpm
+.build/
+
+# fastlane
+#
+# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
+# screenshots whenever they are needed.
+# For more information about the recommended setup visit:
+# https://docs.fastlane.tools/best-practices/source-control/
+
+Buildsystem/Fastlane/Preview.html
+Buildsystem/Fastlane/report.xml
+Buildsystem/Fastlane/screenshots/*/*.png
+Buildsystem/Fastlane/screenshots/screenshots.html
+Buildsystem/Fastlane/test_output
+Buildsystem/Fastlane/notes.txt
+Buildsystem/Fastlane/signReport.pdf
+Buildsystem/Fastlane/README.md.backup
+
+# Code Injection
+#
+# After new code Injection tools there's a generated folder /iOSInjectionProject
+# https://github.com/johnno1962/injectionforxcode
+iOSInjectionProject/
 
 # macOS
 .DS_Store
+.AppleDouble
+.LSOverride
 
-# Fastlane
-Buildsystem/fastlane/Preview.html
-Buildsystem/fastlane/report.xml
-Buildsystem/fastlane/screenshots/*/*.png
-Buildsystem/fastlane/screenshots/screenshots.html
-Buildsystem/fastlane/test_output
+# Thumbnails
+._*
 
-# CocoaPods
-Pods
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Archives (general)
+*.zip
+!*.xcframework.zip
 
 # Private Constants
 0001-privateConstants.patch
 
-# Others
-build
-DerivedData
+# Project specific
 External
 ImportedSources
 !Makefile
+
+# IDEs
 .idea/
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
 .*.sw[nop]
+
+# Ruby / rbenv / rvm
+.ruby-version
+.ruby-gemset
+.bundle/
+vendor/bundle
