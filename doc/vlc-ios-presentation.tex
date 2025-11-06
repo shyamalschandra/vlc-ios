@@ -1,0 +1,434 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{default}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+
+\title{VLC for iOS}
+\subtitle{Comprehensive Media Player for Apple Platforms}
+\author{VideoLAN Team}
+\date{\today}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=cyan,
+}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Overview}
+\begin{itemize}
+    \item Open-source media player for iOS, tvOS, watchOS, and visionOS
+    \item Built on VLCKit (libvlc wrapper)
+    \item Supports 100+ audio/video formats
+    \item Dual-licensed: GPLv2+ and MPLv2
+    \item Active development with 1000+ contributors
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Platform Support}
+\begin{columns}
+\column{0.5\textwidth}
+\textbf{Supported Platforms:}
+\begin{itemize}
+    \item iOS 12.0+
+    \item tvOS 12.0+
+    \item watchOS 9.0+
+    \item visionOS 1.0+
+\end{itemize}
+
+\column{0.5\textwidth}
+\textbf{Key Features:}
+\begin{itemize}
+    \item Multi-format playback
+    \item Network streaming
+    \item Subtitle support
+    \item Audio equalization
+    \item Hardware acceleration
+\end{itemize}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Architecture}
+\begin{block}{Core Components}
+\begin{itemize}
+    \item \textbf{VLCKit}: Media playback engine
+    \item \textbf{MediaLibraryService}: Media discovery and indexing
+    \item \textbf{VLCPlaybackService}: Playback coordination
+    \item \textbf{Network Services}: Cloud storage integration
+\end{itemize}
+\end{block}
+
+\begin{block}{Swift-Objective-C Interop}
+\begin{itemize}
+    \item Bridging headers for API exposure
+    \item Runtime class discovery (\texttt{NSClassFromString})
+    \item \texttt{@objc} annotations for visibility
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Recent Enhancements}
+\begin{enumerate}
+    \item \textbf{CarPlay Audio}: Smart audio modes with voice boost
+    \item \textbf{Focus Mode}: Per-mode library configurations
+    \item \textbf{Home Screen Widgets}: Recently played content
+    \item \textbf{Live Activities}: Dynamic Island playback controls
+    \item \textbf{iCloud Sync}: Cross-device favorites and playlists
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{CarPlay Audio Enhancements}
+\begin{columns}
+\column{0.5\textwidth}
+\textbf{Audio Modes:}
+\begin{itemize}
+    \item Normal
+    \item Voice (300-3400Hz boost)
+    \item Music (bass/treble)
+    \item Podcast (voice optimized)
+\end{itemize}
+
+\column{0.5\textwidth}
+\textbf{Features:}
+\begin{itemize}
+    \item Real-time equalization
+    \item Adjustable voice boost
+    \item Frequency-specific processing
+    \item Automatic mode switching
+\end{itemize}
+\end{columns}
+
+\vspace{0.5cm}
+\begin{alertblock}{Implementation}
+Uses \texttt{VLCCarPlayAudioManager} to interface with \texttt{VLCPlaybackService} for dynamic audio processing.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}
+\frametitle{Focus Mode Integration}
+\begin{block}{iOS 15+ Feature}
+\begin{itemize}
+    \item Per-Focus mode media library filtering
+    \item Automatic library configuration changes
+    \item Notification-based transitions
+    \item Context-aware content presentation
+\end{itemize}
+\end{block}
+
+\begin{block}{Implementation}
+\texttt{VLCFocusModeManager} observes Focus mode changes via \texttt{NSNotificationCenter} and adjusts library presentation accordingly.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Home Screen Widgets}
+\begin{columns}
+\column{0.5\textwidth}
+\textbf{WidgetKit Integration:}
+\begin{itemize}
+    \item Recently played media display
+    \item Configurable update intervals
+    \item Multiple widget sizes
+    \item SwiftUI-based UI
+\end{itemize}
+
+\column{0.5\textwidth}
+\textbf{Data Management:}
+\begin{itemize}
+    \item App Groups for shared storage
+    \item Timeline-based updates
+    \item Efficient data caching
+    \item Background refresh
+\end{itemize}
+\end{columns}
+
+\vspace{0.5cm}
+\begin{exampleblock}{Usage}
+Users can add widgets to their Home Screen for quick access to recently played content without opening the app.
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}
+\frametitle{Live Activities}
+\begin{block}{iOS 16.1+ Feature}
+Dynamic, real-time updates in Dynamic Island and Lock Screen:
+\begin{itemize}
+    \item Playback progress tracking
+    \item Play/pause state
+    \item Elapsed and remaining time
+    \item Media metadata display
+\end{itemize}
+\end{block}
+
+\begin{block}{Implementation}
+\texttt{VLCLiveActivityManager} uses ActivityKit to manage Live Activity lifecycle, providing persistent controls without app switching.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{iCloud Synchronization}
+\begin{columns}
+\column{0.5\textwidth}
+\textbf{Features:}
+\begin{itemize}
+    \item Favorites sync
+    \item Playlist sync
+    \item Cross-device sharing
+    \item Automatic conflict resolution
+\end{itemize}
+
+\column{0.5\textwidth}
+\textbf{Technology:}
+\begin{itemize}
+    \item NSUbiquitousKeyValueStore
+    \item CloudKit integration
+    \item Background sync
+    \item Change notifications
+\end{itemize}
+\end{columns}
+
+\vspace{0.5cm}
+\begin{alertblock}{Benefits}
+Users can access their media preferences across all their Apple devices seamlessly.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Technical Implementation}
+\begin{block}{Swift-Objective-C Interoperability}
+\begin{Verbatim}[fontsize=\footnotesize]
+// Runtime class discovery
+Class widgetClass = NSClassFromString(@"VLCWidgetDataProvider");
+id shared = [widgetClass performSelector:@selector(shared)];
+[shared performSelector:@selector(updateFromPlaybackService:) 
+            withObject:playbackService];
+\end{Verbatim}
+\end{block}
+
+\begin{block}{Swift Side}
+\begin{Verbatim}[fontsize=\footnotesize]
+@objc(VLCWidgetDataProvider)
+public class VLCWidgetDataProvider: NSObject {
+    @objc public static let shared = VLCWidgetDataProvider()
+    @objc func updateFromPlaybackService(_ service: Any) { }
+}
+\end{Verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Code Architecture Example}
+\begin{Verbatim}[fontsize=\tiny]
+@available(iOS 16.1, *)
+@objc(VLCLiveActivityManager)
+public class VLCLiveActivityManager: NSObject {
+    @objc public static let shared = VLCLiveActivityManager()
+    
+    @objc(startPlaybackActivityWithTitle:artist:thumbnail:duration:)
+    func startPlaybackActivity(title: String, 
+                               artist: String?, 
+                               thumbnail: String?, 
+                               duration: TimeInterval) {
+        Task { @MainActor in
+            let attributes = VLCPlaybackAttributes(
+                title: title, artist: artist ?? ""
+            )
+            let initialState = VLCPlaybackAttributes.ContentState(
+                progress: 0.0, isPlaying: true,
+                elapsedTime: 0.0, remainingTime: duration
+            )
+            let activity = try Activity<VLCPlaybackAttributes>.request(
+                attributes: attributes, contentState: initialState
+            )
+            self.currentActivity = activity
+        }
+    }
+}
+\end{Verbatim}
+\end{frame}
+
+\begin{frame}
+\frametitle{Development Challenges}
+\begin{block}{Multi-Target Build}
+\begin{itemize}
+    \item Shared codebase across platforms
+    \item Platform-specific conditionals
+    \item Resource bundle management
+    \item Dependency configuration
+\end{itemize}
+\end{block}
+
+\begin{block}{Performance Optimization}
+\begin{itemize}
+    \item Lazy loading for media discovery
+    \item Efficient thumbnail caching
+    \item Memory management for large files
+    \item Background processing optimization
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{User Experience}
+\begin{columns}
+\column{0.5\textwidth}
+\textbf{Accessibility:}
+\begin{itemize}
+    \item VoiceOver support
+    \item Dynamic Type
+    \item High contrast mode
+    \item Custom accessibility labels
+\end{itemize}
+
+\column{0.5\textwidth}
+\textbf{Localization:}
+\begin{itemize}
+    \item 50+ languages
+    \item RTL support
+    \item Automatic detection
+    \item Cultural adaptations
+\end{itemize}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Open Source Model}
+\begin{block}{Licensing}
+\begin{itemize}
+    \item \textbf{GPLv2+}: GNU General Public License v2 or later
+    \item \textbf{MPLv2}: Mozilla Public License v2.0
+    \item Dual licensing provides flexibility
+    \item Contributors grant relicensing rights
+\end{itemize}
+\end{block}
+
+\begin{block}{Community}
+\begin{itemize}
+    \item Public GitLab repository
+    \item Active issue tracking
+    \item Community contributions
+    \item Transparent development
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Development Workflow}
+\begin{block}{Code Quality}
+\begin{itemize}
+    \item SwiftLint integration
+    \item Objective-C style guide
+    \item Comprehensive code comments
+    \item Consistent naming conventions
+\end{itemize}
+\end{block}
+
+\begin{block}{Testing}
+\begin{itemize}
+    \item Manual testing across platforms
+    \item GitLab CI integration
+    \item Automated screenshot tests
+    \item Continuous integration
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Future Directions}
+\begin{itemize}
+    \item Enhanced multi-user support for tvOS
+    \item Advanced cloud storage integration
+    \item Machine learning recommendations
+    \item Enhanced CarPlay video support
+    \item VisionOS spatial media playback
+    \item Advanced audio processing
+    \item Enhanced subtitle rendering
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Key Takeaways}
+\begin{block}{Technical Excellence}
+\begin{itemize}
+    \item Robust architecture with VLCKit
+    \item Modern iOS framework integration
+    \item Cross-platform compatibility
+    \item Performance optimization
+\end{itemize}
+\end{block}
+
+\begin{block}{User Experience}
+\begin{itemize}
+    \item Comprehensive feature set
+    \item Accessibility-first design
+    \item Extensive localization
+    \item Modern iOS features
+\end{itemize}
+\end{block}
+
+\begin{block}{Open Source}
+\begin{itemize}
+    \item Community-driven development
+    \item Transparent process
+    \item Dual licensing model
+    \item Active contribution
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Resources}
+\begin{block}{Project Links}
+\begin{itemize}
+    \item \textbf{Repository}: \url{https://code.videolan.org/videolan/vlc-ios}
+    \item \textbf{GitHub Mirror}: \url{https://github.com/videolan/vlc-ios}
+    \item \textbf{VLCKit}: \url{https://code.videolan.org/videolan/VLCKit}
+    \item \textbf{Documentation}: \url{https://www.videolan.org}
+\end{itemize}
+\end{block}
+
+\begin{block}{Contributing}
+\begin{itemize}
+    \item Issue tracking on GitLab
+    \item Beginner-friendly tags
+    \item Code of Conduct
+    \item Contribution guidelines
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Thank You}
+\begin{center}
+\Large
+Questions?
+
+\vspace{1cm}
+
+\large
+\textbf{VLC for iOS}\\
+Open-source media player for Apple platforms
+
+\vspace{0.5cm}
+
+\normalsize
+\url{https://code.videolan.org/videolan/vlc-ios}
+\end{center}
+\end{frame}
+
+\end{document}
+

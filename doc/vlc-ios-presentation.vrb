@@ -1,0 +1,28 @@
+\frametitle{Code Architecture Example}
+\begin{Verbatim}[fontsize=\tiny]
+@available(iOS 16.1, *)
+@objc(VLCLiveActivityManager)
+public class VLCLiveActivityManager: NSObject {
+    @objc public static let shared = VLCLiveActivityManager()
+
+    @objc(startPlaybackActivityWithTitle:artist:thumbnail:duration:)
+    func startPlaybackActivity(title: String,
+                               artist: String?,
+                               thumbnail: String?,
+                               duration: TimeInterval) {
+        Task { @MainActor in
+            let attributes = VLCPlaybackAttributes(
+                title: title, artist: artist ?? ""
+            )
+            let initialState = VLCPlaybackAttributes.ContentState(
+                progress: 0.0, isPlaying: true,
+                elapsedTime: 0.0, remainingTime: duration
+            )
+            let activity = try Activity<VLCPlaybackAttributes>.request(
+                attributes: attributes, contentState: initialState
+            )
+            self.currentActivity = activity
+        }
+    }
+}
+\end{Verbatim}
